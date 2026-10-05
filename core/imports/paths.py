@@ -580,11 +580,13 @@ def _replace_template_variables(template: str, context: dict) -> str:
         # $disambiguation above. Lets a filename tell "Song (acoustic)"
         # from the album version.
         "track_disambiguation": clean_context.get("track_disambiguation", ""),
+        "label": clean_context.get("label", ""),
     }
     for var_name, val in bracket_map.items():
         result = result.replace("${" + var_name + "}", val)
 
     result = result.replace("$disambiguation", clean_context.get("disambiguation", ""))
+    result = result.replace("$label", clean_context.get("label", ""))
     result = result.replace("$albumartist", album_artist_value)
     result = result.replace("$albumtype", clean_context.get("albumtype", "Album"))
     # Order is not load-bearing here — "$atypes" and "$album" share only "$a",

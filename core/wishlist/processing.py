@@ -331,10 +331,35 @@ def _run_wishlist_cycle(
                     runtime.run_full_missing_tracks_process,
                     batch_id, playlist_id, batch_tracks,
                 )
+                # #1548: playlist-named batches get their own log; the generic
+                # residual keeps the old message so existing tests pass.
+                is_playlist_batch = batch_name not in (
+                    f"Wishlist (Auto - {cycle.capitalize()})",
+                    "Wishlist (Residual)",
+                )
                 if auto_initiated:
-                    logger.info(
-                        f"Starting wishlist batch {batch_id} '{batch_name}' with {batch_count} tracks "
-                    )
+                    if is_playlist_batch:
+                        logger.info(
+                            f"Starting wishlist playlist batch {batch_id} '{batch_name}' "
+                            f"with {batch_count} tracks [run {run_id[:8]}] [profile {owner_profile_id}]"
+                        )
+                    else:
+                        logger.info(
+                            f"Starting wishlist residual batch {batch_id} with {batch_count} tracks "
+                            f"({'singles' if cycle == 'singles' else 'unbucketed albums'}) "
+                            f"[run {run_id[:8]}] [profile {owner_profile_id}]"
+                        )
+                else:
+                    if is_playlist_batch:
+                        logger.info(
+                            f"[Manual-Wishlist] Playlist batch {batch_id} '{batch_name}' "
+                            f"with {batch_count} tracks [profile {owner_profile_id}]"
+                        )
+                    else:
+                        logger.info(
+                            f"[Manual-Wishlist] Residual per-track batch {batch_id} "
+                            f"with {batch_count} tracks [profile {owner_profile_id}]"
+                        )
             # Skip the old single-residual-batch block below.
             continue
 
